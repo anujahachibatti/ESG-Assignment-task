@@ -1,0 +1,322 @@
+{
+  "info": {
+    "_postman_id": "esg-reporting-suite-2026",
+    "name": "ESG Traceable Reporting & Carbon Calculator Platform",
+    "description": "Comprehensive Postman test suite covering RBAC, metric entry, automated calculations, submission and review workflows, carbon inventory integration, and tamper-evident report generation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "1.1 Login as Contributor (Apex Mfg)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('token_contributor', jsonData.token);",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Role is ROLE_CONTRIBUTOR', function () { pm.expect(jsonData.role).to.eql('ROLE_CONTRIBUTOR'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"contributor\",\n  \"password\": \"contrib123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "1.2 Login as Reviewer (Chief Sustainability Officer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('token_reviewer', jsonData.token);",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Role is ROLE_REVIEWER', function () { pm.expect(jsonData.role).to.eql('ROLE_REVIEWER'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"reviewer\",\n  \"password\": \"review123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "1.3 Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('token_admin', jsonData.token);",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "1.4 Login as Supplier Contributor (GreenSteel)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('token_supplier', jsonData.token);",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"supplier_user\",\n  \"password\": \"supplier123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Organizations & Boundaries",
+      "item": [
+        {
+          "name": "2.1 List All Organizations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/organizations", "host": ["{{baseUrl}}"], "path": ["api", "organizations"] }
+          }
+        },
+        {
+          "name": "2.2 Get Reporting Periods for Apex Mfg",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/organizations/1/periods", "host": ["{{baseUrl}}"], "path": ["api", "organizations", "1", "periods"] }
+          }
+        },
+        {
+          "name": "2.3 Get Supply Chain Stakeholders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/organizations/1/stakeholders", "host": ["{{baseUrl}}"], "path": ["api", "organizations", "1", "stakeholders"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Carbon Inventory Integration",
+      "item": [
+        {
+          "name": "3.1 Get Integrated Carbon Inventory (Scope 1, 2, 3)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/carbon/periods/1/organizations/1", "host": ["{{baseUrl}}"], "path": ["api", "carbon", "periods", "1", "organizations", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Metric Calculations & Entry",
+      "item": [
+        {
+          "name": "4.1 Save Waste Recycling Draft (Calculation)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_contributor}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataState\": \"PROVIDED\",\n  \"totalWaste\": 150.0,\n  \"recycledWaste\": 90.0,\n  \"unit\": \"tonnes\",\n  \"methodDescription\": \"Weighbridge receipts and scrap contractor manifests\",\n  \"dataSource\": \"Factory Weighbridge Ticket Register\",\n  \"estimationStatus\": \"MEASURED\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/metrics/1/draft", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "1", "draft"] }
+          }
+        },
+        {
+          "name": "4.2 Save Workforce Turnover Draft",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_contributor}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataState\": \"PROVIDED\",\n  \"startHeadcount\": 400,\n  \"endHeadcount\": 440,\n  \"departures\": 35,\n  \"contractorsExcluded\": true,\n  \"methodDescription\": \"HRIS census audit report\",\n  \"dataSource\": \"SAP SuccessFactors Employee Master\",\n  \"estimationStatus\": \"MEASURED\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/metrics/4/draft", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "4", "draft"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Workflow & Review Assurance",
+      "item": [
+        {
+          "name": "5.1 Submit Metric Revision for Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/metrics/1/submit", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "1", "submit"] }
+          }
+        },
+        {
+          "name": "5.2 Blocked Self-Approval (Separation of Duties Check)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_contributor}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"APPROVE\",\n  \"comments\": \"Contributor self approval test\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/metrics/1/approve", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "1", "approve"] }
+          }
+        },
+        {
+          "name": "5.3 Reviewer Requests Changes with Mandatory Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_reviewer}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"REQUEST_CHANGES\",\n  \"comments\": \"Please attach the third-party waste disposal manifests for Plant 2.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/metrics/1/request-changes", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "1", "request-changes"] }
+          }
+        },
+        {
+          "name": "5.4 Reviewer Approves Metric Revision",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_reviewer}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"APPROVE\",\n  \"comments\": \"Manifests verified and approved.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/metrics/1/approve", "host": ["{{baseUrl}}"], "path": ["api", "metrics", "1", "approve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Dashboard & Reporting Completeness",
+      "item": [
+        {
+          "name": "6.1 Get Executive Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/dashboard/periods/1/organizations/1", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "periods", "1", "organizations", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Report Generation & Immutability",
+      "item": [
+        {
+          "name": "7.1 Generate New Immutable Report Version",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token_contributor}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apex Global Manufacturing - Annual ESG Report (Audited)\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/reports/periods/1/organizations/1/generate", "host": ["{{baseUrl}}"], "path": ["api", "reports", "periods", "1", "organizations", "1", "generate"] }
+          }
+        },
+        {
+          "name": "7.2 List Generated Report Versions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/reports/periods/1/organizations/1", "host": ["{{baseUrl}}"], "path": ["api", "reports", "periods", "1", "organizations", "1"] }
+          }
+        },
+        {
+          "name": "7.3 Download Report PDF",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/reports/1/download/pdf", "host": ["{{baseUrl}}"], "path": ["api", "reports", "1", "download", "pdf"] }
+          }
+        },
+        {
+          "name": "7.4 Download Report Word (.docx)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_contributor}}" }],
+            "url": { "raw": "{{baseUrl}}/api/reports/1/download/docx", "host": ["{{baseUrl}}"], "path": ["api", "reports", "1", "download", "docx"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. RBAC Cross-Organization Isolation Test",
+      "item": [
+        {
+          "name": "8.1 Denied Access: Supplier accessing Reporting Org Data (Expect 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_supplier}}" }],
+            "url": { "raw": "{{baseUrl}}/api/dashboard/periods/1/organizations/1", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "periods", "1", "organizations", "1"] }
+          }
+        }
+      ]
+    }
+  ]
+}
